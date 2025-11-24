@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lubrication Map Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <div id="author-credit">CREATED BY: D . CORRAL</div>
+
+        <h1>Lubrication Map</h1>
+        <p>Click on any asset block to manage lubrication tasks.</p>
+        <button id="generateReportBtn" onclick="generateLubricationReport()">Generate PDF Report (Full Site)</button>
+
+        <div id="overall-progress-chart-container">
+            <canvas id="overallProgressChart"></canvas>
+            <div id="overallProgressCard">
+                <p>Overall Progress</p>
+                <span id="overallPercentageText" class="progress-big-number">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="plant-map-container">
+        <div class="asset-group top-assets">
+            <div id="unwind-section" class="asset-block">UNWIND SECTION</div>
+            <div id="splice-section" class="asset-block">SPLICE SECTION</div>
+            <div id="dml-section" class="asset-block">DML SECTION </div>
+            <div id="coater-section" class="asset-block">COATER SECTION</div>
+            <div id="surge-tank-system" class="asset-block">SURGE TANK SYSTEM</div>
+            <div id="filler-system" class="asset-block">FILLER SYSTEM</div>
+        </div>
+
+        <div class="asset-group main-line-top">
+            <div id="blender-section" class="asset-block">BLENDER SECTION</div>
+            <div id="granule-section" class="asset-block">GRANULE SECTION</div>
+            <div id="cooling-section" class="asset-block">COOLING SECTION</div>
+            <div id="fpl-section" class="asset-block">FPL SECTION</div>
+        </div>
+        
+        <div class="asset-group main-line-middle">
+            <div id="sealant-carry-over" class="asset-block">SEALANT & CARRY OVER</div>
+            <div id="run-tank-sealant" class="asset-block">RUN TANK (SEALANT)</div>
+            <div id="pattern-cutter" class="asset-block">PATTERN CUTTER</div>
+            <div id="laminator-section" class="asset-block">LAMINATOR SECTION</div>
+            <div id="run-tank-adhesive" class="asset-block">RUN TANK (ADHESIVE)</div>
+            <div id="chop-cutter" class="asset-block">CHOP CUTTER</div>
+        </div>
+
+        <div class="asset-group main-line-bottom">
+            <div id="delivery-section" class="asset-block">DELIVERY SECTION</div>
+            <div id="catchers" class="asset-block">CATCHERS</div>
+            <div id="asphalt-yard" class="asset-block">ASPHALT YARD (STORAGE)</div>
+        </div>
+
+        <div class="asset-group palletizer-row bottom-assets">
+            <div id="palletizer-1-north" class="asset-block">PALLETIZER 1 (NORTH)</div>
+            <div id="wrapper-1" class="asset-block">WRAPPER 1</div>
+            <div id="wrapper-1-entry" class="asset-block">WRAPPER 1 ENTRY</div>
+            <div id="palletizer-2" class="asset-block">PALLETIZER 2 (SOUTH)</div>
+            <div id="wrapper-2" class="asset-block">WRAPPER 2</div>
+            <div id="wrapper-2-entry" class="asset-block">WRAPPER 2 ENTRY</div>
+        </div>
+    </div>
+    
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Lubrication Tasks</h2>
+            <div id="taskList">
+                </div>
+            <input type="hidden" id="currentAssetId">
+        </div>
+    </div>
+    
+    <div id="editTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeEditModal()">&times;</span>
+            <h2 id="edit-modal-title">Edit Task</h2>
+            <div id="editTaskForm">
+                <label for="editTaskText">Description:</label>
+                <input type="text" id="editTaskText">
+                
+                <label for="editTaskFrequency">Frequency:</label>
+                <select id="editTaskFrequency">
+                    <option value="1D">Daily (1D)</option>
+                    <option value="7D">Weekly (7D)</option>
+                    <option value="14D">Bi-Weekly (14D)</option>
+                    <option value="1M">Monthly (1M)</option>
+                    <option value="3M">Quarterly (3M)</option>
+                    <option value="6M">Bi-Annually (6M)</option>
+                    <option value="1Y">Annually (1Y)</option>
+                </select>
+
+                <div id="editStartDayGroup">
+                    <label for="editStartDay">Annual Start Day (1-365):</label>
+                    <input type="number" id="editStartDay" value="0" min="0" max="365">
+                </div>
+
+                <label for="editLastCompleted">Last Completed Date (YYYY-MM-DD):</label>
+                <input type="date" id="editLastCompleted">
+
+                <button onclick="saveEditedTask()">Save Changes</button>
+                
+                <input type="hidden" id="editCurrentAssetId">
+                <input type="hidden" id="editCurrentTaskIndex">
+            </div>
+        </div>
+    </div>
+    
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAddTaskModal()">&times;</span>
+            <h2 id="addTaskModalTitle">Add New Task</h2>
+
+            <div id="addTaskForm">
+                <label for="newTaskText">Description:</label>
+                <input type="text" id="newTaskText" placeholder="Task description (e.g., Grease Motor)">
+                
+                <label for="newTaskFrequency">Frequency:</label>
+                <select id="newTaskFrequency">
+                    <option value="1D">Daily (1D)</option>
+                    <option value="7D">Weekly (7D)</option>
+                    <option value="14D">Bi-Weekly (14D)</option>
+                    <option value="1M">Monthly (1M)</option>
+                    <option value="3M">Quarterly (3M)</option>
+                    <option value="6M">Bi-Annually (6M)</option>
+                    <option value="1Y">Annually (1Y)</option>
+                </select>
+                
+                <div id="newTaskStartDayGroup" style="display: none;">
+                    <label for="newTaskStartDay">Annual Start Day (1-365):</label>
+                    <input type="number" id="newTaskStartDay" value="0" min="0" max="365">
+                </div>
+
+                <button onclick="addTask()">Save Task</button>
+                <input type="hidden" id="addTaskAssetId">
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div class="modal-content image-modal-content">
+            <span class="close-button" onclick="closeImageModal()">&times;</span>
+            <h2 id="image-modal-title">Lubrication Points Map</h2>
+            
+            <div id="link-admin-form">
+                <p style="font-size: 1em; font-weight: bold; margin-bottom: 5px;">Paste Google Drive Shared Link:</p>
+                <input type="text" id="imageLinkInput" placeholder="e.g., https://drive.google.com/file/d/ID_DEL_ARCHIVO/view?usp=sharing" style="width: 90%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+                <button onclick="saveNewImageLink()" style="padding: 8px 15px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Save and Load Map</button>
+                <hr style="margin-top: 15px; margin-bottom: 15px;">
+            </div>
+
+            <div id="image-container-wrapper">
+                <img id="assetLubricationImage" src="" alt="Lubrication Points" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                <p id="noImageMessage" style="display: none; text-align: center; color: #e74c3c; font-weight: bold; margin-top: 20px;">No image configured yet. Enter the shared Google Drive link above.</p>
+            </div>
+            <input type="hidden" id="currentImageAssetId"> 
+        </div>
+    </div>
+
+    <script>
+        // Script para manejar la visibilidad del campo de día de inicio en el modal de adición
+        document.getElementById('newTaskFrequency').addEventListener('change', function() {
+            const group = document.getElementById('newTaskStartDayGroup');
+            if (this.value === '1Y') {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

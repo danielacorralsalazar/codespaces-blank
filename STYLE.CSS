@@ -1,0 +1,511 @@
+/* ====================================================================
+    --- GENERAL STYLES AND LAYOUT ---
+    ==================================================================== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+header {
+    background-color: #5d5d5d;
+    color: white;
+    padding: 15px 0 20px 0;
+    position: relative;
+    margin-bottom: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔑 ESTILOS DEL CRÉDITO DE AUTOR */
+#author-credit {
+    position: absolute;
+    top: 15px; 
+    left: 20px; 
+    color: #cccccc; 
+    font-size: 1vw; 
+    font-weight: 600;
+}
+
+header h1 {
+    margin-top: 0;
+    font-size: 2.5vw;
+    margin-bottom: 0.5vh;
+}
+
+header p {
+    color: #ccc;
+    font-size: 1.2vw;
+    margin-bottom: 1vh;
+    margin-top: 0;
+}
+
+/* Overall Progress Chart (Top Right) */
+#overall-progress-chart-container {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+}
+
+#overallProgressCard {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+}
+
+#overallProgressCard p {
+    margin: 0;
+    font-size: 0.8em;
+    color: white;
+}
+
+.progress-big-number {
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+#generateReportBtn {
+    padding: 8px 15px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1vw;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#generateReportBtn:hover {
+    background-color: #c0392b;
+}
+
+/* ====================================================================
+    --- PLANT MAP & ASSET STYLES ---
+    ==================================================================== */
+
+#plant-map-container {
+    width: 95vw;
+    margin: 20px auto 20px auto;
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    min-height: 50vh;
+}
+
+.asset-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+/* Base style for all asset blocks */
+.asset-block {
+    background-color: #f7f7f7;
+    color: #333;
+    padding: 5px 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9vw;
+    font-weight: bold;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 40px;
+}
+
+/* AJUSTES DE ANCHURA DE BLOQUES */
+/* Row of 6 columns */
+.top-assets .asset-block,
+.main-line-middle .asset-block,
+.palletizer-row .asset-block {
+    width: calc((100% - 40px) / 6);
+    min-width: 100px;
+}
+
+/* Row of 4 columns */
+.main-line-top .asset-block {
+    width: calc((100% - 24px) / 4);
+}
+
+/* Row of 3 columns */
+.main-line-bottom .asset-block {
+    width: calc((100% - 16px) / 3);
+}
+
+.asset-block:hover {
+    background-color: #ebebeb;
+}
+
+/* --- PROGRESS BAR STYLES (Horizontal Bar indicator) --- */
+
+.progress-bar-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background-color: #e0e0e0;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-text {
+    position: relative;
+    color: #fff;
+    font-size: 0.6em;
+    font-weight: bold;
+    z-index: 10;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Conditional Colors */
+.progress-bar.due {
+    background-color: #e67e22;
+}
+
+.progress-bar.ok {
+    background-color: #2ecc71;
+}
+
+/* ====================================================================
+    --- MODAL STYLES (TASK LIST ALIGNMENT FIX) ---
+    ==================================================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 4% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 1200px;
+    max-height: 75vh;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    color: #333;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.close-button {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+
+#openAddTaskModalBtn {
+    padding: 8px 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#openAddTaskModalBtn:hover {
+    background-color: #2980b9;
+}
+
+
+/* Task List Container for Scroll */
+#taskList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid #ccc;
+    overflow-y: auto;
+    overflow-x: auto;
+    flex-grow: 1;
+    width: 100%;
+}
+
+/* ====================================================================
+    --- CSS GRID FOR TASK TABLE ALIGNMENT ---
+    ==================================================================== */
+
+/* Define la estructura de 6 columnas */
+.task-table-header, .task-item {
+    display: grid;
+    /* Descripción | Frecuencia | Último | Próximo | Horas | Acciones */
+    grid-template-columns: 4fr 1fr 1.2fr 1.2fr 0.7fr 1.5fr;
+    gap: 5px;
+    padding: 8px 0;
+    align-items: center; 
+    border-bottom: 1px solid #eee;
+    min-width: 1000px;
+}
+
+.task-table-header {
+    font-weight: bold;
+    background-color: #f4f4f4;
+    border-bottom: 2px solid #ccc;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.9em;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.task-table-header div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-table-header div:first-child {
+    text-align: left;
+    padding-left: 5px;
+}
+
+.task-item {
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Columna 1: Checkbox + Descripción */
+.task-description-cell {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 5px;
+}
+
+.task-description-cell input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.1);
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.task-description-text {
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
+    flex-grow: 1;
+    padding-right: 10px;
+}
+
+.task-item.completed-task .task-description-text {
+    text-decoration: line-through;
+    color: #777;
+}
+
+/* Columnas de Detalles (2, 3, 4, 5) */
+.task-detail-item {
+    white-space: nowrap; 
+    text-align: center;
+    padding: 0 5px;
+}
+
+.task-hours-input-container {
+    padding: 0 5px;
+}
+
+.hours-input {
+    width: 90%;
+    max-width: 60px;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+/* Columna 6: Acciones */
+.task-actions-group {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 3px;
+    padding-right: 5px;
+}
+
+.edit-task-btn, .delete-task-btn, .skip-task-btn {
+    padding: 4px 6px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.edit-task-btn { background-color: #f1c40f; color: white; }
+.delete-task-btn { background-color: #e74c3c; color: white; }
+.skip-task-btn { background-color: #95a5a6; color: white; }
+
+.blocked-message {
+    font-size: 0.8em;
+    color: #e67e22;
+    font-weight: bold;
+    width: 100%;
+    text-align: right;
+    margin-bottom: 5px;
+    white-space: normal;
+}
+
+/* New/Edit Task Form Styles */
+#addTaskForm, #editTaskForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+    flex-shrink: 0;
+}
+
+#addTaskForm label, #editTaskForm label {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+#addTaskForm input[type="text"], 
+#addTaskForm select, 
+#addTaskForm input[type="number"],
+#editTaskForm input[type="text"], 
+#editTaskForm select, 
+#editTaskForm input[type="number"],
+#editTaskForm input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+#addTaskForm button, #editTaskForm button {
+    padding: 10px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+#addTaskForm button:hover, #editTaskForm button:hover {
+    background-color: #27ae60;
+}
+
+/* ====================================================================
+   --- IMAGE MODAL STYLES (NUEVO) ---
+   ==================================================================== */
+
+.image-modal-content {
+    max-width: 90%; 
+    max-height: 90vh; 
+    margin: 2% auto;
+    text-align: center;
+}
+
+#image-container-wrapper {
+    overflow: auto; 
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#assetLubricationImage {
+    max-height: 80vh; 
+    object-fit: contain;
+    width: auto;
+}
+
+
+/* Media Queries for smaller screens */
+@media (max-width: 768px) {
+    
+    #author-credit { font-size: 2.5vw; }
+    header h1 { font-size: 5vw; }
+    header p { font-size: 3vw; }
+    #generateReportBtn { font-size: 3vw; }
+    .asset-block { font-size: 2.5vw; }
+
+    .top-assets .asset-block,
+    .main-line-middle .asset-block,
+    .palletizer-row .asset-block {
+        width: calc((100% - 32px) / 4);
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+}
